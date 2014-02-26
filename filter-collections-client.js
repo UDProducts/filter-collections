@@ -426,12 +426,21 @@ Meteor.FilterCollections = function (collection, settings) {
           else
             value = filter.value;
 
-          if (filter.operator && filter.operator[0]) {
-            segment[key][filter.operator[0]] = value;
-            if (filter.operator[1])
-              segment[key].$options = filter.operator[1];
+            
+          if (typeof _filters[key].value === 'string') {     
+            if (filter.operator && filter.operator[0]) {
+              segment[key][filter.operator[0]] = value;
+              if (filter.operator[1])
+                segment[key].$options = filter.operator[1];
+            } else {
+              segment[key] = value;
+            }
           } else {
-            segment[key] = value;
+            if (filter.operator) {
+              _.each(filter.value, function(value, i) {
+                segment[key][filter.operator[i]] = value
+              });
+            }
           }
 
           if (!_.isEmpty(filter.condition)) {
